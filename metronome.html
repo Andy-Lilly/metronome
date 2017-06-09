@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<script src="metronome.js"></script>
+		<link rel="stylesheet" href="metronome.css">
+	</head>
+	<body>
+		<button onclick="onToggleBtnClicked(arguments[0])">Start</button>
+		<input id='bpm' value='120' type='number'></input>
+		<div class=row>
+			<input type='number' value='1'></input>
+			<button id='remove-btn' class='inline-btn' onclick="onRemoveBtnClicked(arguments[0])">x</button>
+			<button id='add-btn' class='inline-btn' onclick="onAddBtnClicked(arguments[0])">+</button>
+		</div>
+		<button id='row-remove-btn' onclick="onRowRemoveBtnClicked(arguments[0])">x</button>
+		<button id='row-add-btn' onclick="onRowAddBtnClicked(arguments[0])">+</button>
+	</body>
+</html>

@@ -1,0 +1,16 @@
+.inline-btn {
+	display:inline-block;
+}
+
+.row input {
+	width:30px;
+	display:inline-block;
+}
+
+.row input[disabled="disabled"] {
+	background-color:lightgrey;
+}
+
+body > div > input[type="number"]:nth-child(4n+1) {
+	background-color:pink;
+}
