@@ -1,18 +1,19 @@
 <html>
 	<head>
 		<script src='metronome.js'></script>
+		<script src='metronome_test.js'></script>
 		<link rel='stylesheet' href='metronome.css'>
 	</head>
 	<body>
-		<button onclick='onToggleBtnClicked(arguments[0])'>Start</button>
+		<button id='start-stop' onclick='onToggleBtnClicked(arguments[0])'>Start</button>
 		<input id='bpm' value='120' type='number'></input>
 		<div>
-			<button onclick='onAddColumnBtnClicked(arguments[0])'>Add Column</button>
-			<button onclick='onRemoveColumnBtnClicked(arguments[0])'>Remove Column</button>
+			<button id='add-column' onclick='onAddColumnBtnClicked(arguments[0])'>Add Column</button>
+			<button id='remove-column' onclick='onRemoveColumnBtnClicked(arguments[0])'>Remove Column</button>
 		</div>
 		<div>
-			<button onclick='onAddRowBtnClicked(arguments[0])'>Add Row</button>
-			<button onclick='onRemoveRowBtnClicked(arguments[0])'>Remove Row</button>
+			<button id='add-row' onclick='onAddRowBtnClicked(arguments[0])'>Add Row</button>
+			<button id='remove-row' onclick='onRemoveRowBtnClicked(arguments[0])'>Remove Row</button>
 		</div>
 		<div class=row>
 			<button class='cell' onclick='onCellClicked(arguments[0])'>1</button>
