@@ -1,41 +1,52 @@
 
-var isRunning, audio = new Audio("Click1.wav");
+var isRunning;
+
+var cellSounds = {
+	'0': null,
+	'1': new Audio("Click1.wav"),
+	'2': new Audio("Click2.wav")
+}
 
 var onStart = function(e) {
-	[].slice.call(document.querySelectorAll('input')).forEach(function(input) {
-		input.setAttribute('disabled','disabled');
+	[].slice.call(document.querySelectorAll('button,input')).forEach(function(el) {
+		if(el != e.target)
+			el.setAttribute('disabled','disabled');
 	});
 	isRunning = true;
 	e.target.textContent = 'Stop';
 
-	var inputs = [];
+	var cells = [];
 	[].slice.call(document.getElementsByClassName('row')).forEach(function(row) {
-		[].slice.call(row.querySelectorAll('input')).forEach(function(input) {
-			inputs.push(input);
+		[].slice.call(row.querySelectorAll('.cell')).forEach(function(cell) {
+			cells.push(cell);
 		});
 	});
 
-	tick(inputs, 0, Math.max(60*1000/document.getElementById('bpm').value));
+	tick(cells, 0, Math.max(60*1000/document.getElementById('bpm').value));
 };
 
 var onStop = function(e) {
-	[].slice.call(document.querySelectorAll('input')).forEach(function(input) {
-		input.removeAttribute('disabled');
+	[].slice.call(document.querySelectorAll('button,input')).forEach(function(el) {
+		el.removeAttribute('disabled');
 	});
 	isRunning = false;
 	e.target.textContent = 'Start';
 };
 
-var tick = function(inputs, index, millis) {
+var tick = function(cells, index, millis) {
 	if(!isRunning)
 		return;
-	var input = inputs[index];
-	input.setAttribute('style', 'background-color:blue');
-	if(parseInt(input.value, 10))
+
+	var cell = cells[index];
+	cell.setAttribute('style', 'background-color:blue');
+
+	var audio = cellSounds[cell.textContent];
+
+	if(audio)
 		audio.play();
 	setTimeout(function() {
-		input.removeAttribute('style');
-		tick(inputs, (index + 1) % inputs.length, millis);
+		cell.removeAttribute('style');
+		tick(cells, (index + 1) % cells.length, millis);
 	}, millis);
 };
 
@@ -43,36 +54,32 @@ var onToggleBtnClicked = function(e) {
 	isRunning? onStop(e) : onStart(e);
 };
 
-var onAddBtnClicked = function(e) {
+var onAddColumnBtnClicked = function(e) {
 	if(isRunning)
 		return;
 
 	[].slice.call(document.querySelectorAll('.row')).forEach(function(row) {
-		var input = document.createElement('input');
-		input.setAttribute('type', 'number');
-		input.setAttribute('value', '1');
-
-		var inputs = [].slice.call(row.querySelectorAll('input'));
-		if(inputs.length)
-			inputs.pop().insertAdjacentElement('afterend',input);
+		var cells = [].slice.call(row.querySelectorAll('.cell'));
+		if(cells.length)
+			cells.pop().insertAdjacentElement('afterend', createCell());
 		else
-			row.insertAdjacentElement('afterbegin', input);
+			row.insertAdjacentElement('afterbegin', createCell());
 	})
 };
 
-var onRemoveBtnClicked = function(e) {
+var onRemoveColumnBtnClicked = function(e) {
 	if(isRunning)
 		return;
 
 	[].slice.call(document.querySelectorAll('.row')).forEach(function(row) {
-		var inputs = [].slice.call(row.querySelectorAll('input'))
-		var input = inputs.pop();
-		if(inputs.length)
-			input.parentElement.removeChild(input);
+		var cells = [].slice.call(row.querySelectorAll('.cell'))
+		var cell = cells.pop();
+		if(cells.length)
+			cell.parentElement.removeChild(cell);
 	});
 };
 
-var onRowAddBtnClicked = function(e) {
+var onAddRowBtnClicked = function(e) {
 	if(isRunning)
 		return;
 
@@ -80,53 +87,34 @@ var onRowAddBtnClicked = function(e) {
 	div.setAttribute('class', 'row');
 
 	var rows = document.querySelectorAll('.row');
-	if(rows.length) {
-		var row = rows[rows.length - 1];
+	if(!rows.length)
+		throw new Error('Error: zero rows. Please refresh page.');
+	var row = rows[rows.length - 1];
 
-		var inputs = [].slice.call(row.querySelectorAll('input'));
-		inputs.forEach(function() {
-			var input = document.createElement('input');
-			input.setAttribute('type', 'number');
-			input.setAttribute('value', '1');
+	[].slice.call(row.querySelectorAll('.cell')).forEach(function() {
+		div.appendChild(createCell());
+	});
 
-			div.appendChild(input);
-		});
-
-		row.insertAdjacentElement('afterend', div);
-	} else {
-		for(var i = 0; i < 4; i++) {
-			var input = document.createElement('input');
-			input.setAttribute('type', 'number');
-			input.setAttribute('value', '1');
-
-			div.appendChild(input);
-		}
-
-		var removeBtn = document.createElement('button');
-		removeBtn.textContent = 'x';
-		removeBtn.setAttribute('id', 'remove-btn');
-		removeBtn.setAttribute('class', 'inline-btn');
-		removeBtn.setAttribute('onclick', 'onRemoveBtnClicked(arguments[0])');
-
-		div.appendChild(removeBtn);
-
-		var addBtn = document.createElement('button');
-		addBtn.textContent = '+';
-		addBtn.setAttribute('id', 'add-btn');
-		addBtn.setAttribute('class', 'inline-btn');
-		addBtn.setAttribute('onclick', 'onAddBtnClicked(arguments[0])');
-
-		div.appendChild(addBtn);
-
-		document.getElementById('bpm').insertAdjacentElement('afterend', div);
-	}
+	row.insertAdjacentElement('afterend', div);
 };
 
-var onRowRemoveBtnClicked = function(e) {
+var onRemoveRowBtnClicked = function(e) {
 	var rows = [].slice.call(document.querySelectorAll('.row'));
 	var row = rows.pop();
 	if(rows.length)
 		row.parentElement.removeChild(row);
+};
+
+var onCellClicked = function(e) {
+	e.target.textContent = (parseInt(e.target.textContent, 10) + 1 ) % Object.keys(cellSounds).length;
+};
+
+var createCell = function(value) {
+	var cell = document.createElement('button');
+	cell.setAttribute('class', 'cell');
+	cell.setAttribute('onClick', 'onCellClicked(arguments[0])');
+	cell.textContent = value || 0;
+	return cell;
 };
 
 var exportToCSV = function() {
