@@ -3,8 +3,8 @@ var isRunning;
 
 var cellSounds = {
 	'0': null,
-	'1': new Audio("Click1.wav"),
-	'2': new Audio("Click2.wav")
+	'1': new Audio("clicks/0001.wav"),
+	'2': new Audio("clicks/0002.wav")
 }
 
 var onStart = function(e) {
